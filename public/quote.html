@@ -8,7 +8,7 @@
     <meta name="author" content="Roadcon Construction Ltd.">
     <title>Request a Quote | Roadcon Construction</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="images/project1.jpg" type="image/x-icon">
 </head>
 <body>
     <!-- Header -->
@@ -35,7 +35,7 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="hero" style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('images/quote-hero.jpg') no-repeat center center/cover; height: 60vh;">
+    <section class="hero" style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('images/hero-bg.jpg') no-repeat center center/cover; height: 60vh;">
         <div class="container">
             <div class="hero-content">
                 <h1>Request a Quote</h1>
@@ -261,7 +261,16 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
+            .then(response => {
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json();
+                } else {
+                    // If not JSON, throw an error
+                    throw new Error('Server returned non-JSON response');
+                }
+            })
             .then(result => {
                 if (result.error) {
                     document.getElementById('formMessage').innerHTML = '<p style="color: red; padding: 10px; background: #ffe6e6; border-radius: 4px;">Error: ' + result.error + '</p>';
@@ -271,8 +280,8 @@
                 }
             })
             .catch(error => {
+                console.error('Fetch error:', error);
                 document.getElementById('formMessage').innerHTML = '<p style="color: red; padding: 10px; background: #ffe6e6; border-radius: 4px;">An error occurred. Please try again.</p>';
-                console.error('Error:', error);
             })
             .finally(() => {
                 // Reset button state
